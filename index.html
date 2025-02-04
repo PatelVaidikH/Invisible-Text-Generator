@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Invisible Ink Text Generator</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 28px;
+            color: #58a6ff;
+        }
+        textarea, button {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        textarea {
+            height: 100px;
+            border: 2px solid #58a6ff;
+            background: #161b22;
+            color: #c9d1d9;
+        }
+        button {
+            background: #58a6ff;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #1f6feb;
+        }
+        .output {
+            width: 80%;
+            padding: 15px;
+            margin: 10px auto;
+            background: #161b22;
+            border: 2px solid #58a6ff;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: 0.3s;
+        }
+        .output:hover {
+            border-color: #1f6feb;
+        }
+        .hidden-text {
+            color: transparent;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+        }
+        .share-section {
+            margin-top: 15px;
+        }
+        .share-btn {
+            padding: 10px;
+            margin: 5px;
+            font-size: 14px;
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .share-btn:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🔍 Invisible Ink Text Generator</h1>
+    <p>Write a secret message, make it invisible, and prank your friends! 😆</p>
+    
+    <textarea id="inputText" placeholder="Enter your secret message here..."></textarea>
+    <button onclick="generateInvisibleText()">Generate 🔥</button>
+    
+    <div id="outputText" class="output" onclick="revealText()">Click to reveal the message 👀</div>
+    
+    <div class="share-section">
+        <button class="share-btn" onclick="generateShareLink()">🔗 Get Shareable Link</button>
+        <button class="share-btn" id="whatsappShare" style="display:none;">📩 Share on WhatsApp</button>
+        <button class="share-btn" id="telegramShare" style="display:none;">✈️ Share on Telegram</button>
+    </div>
+
+    <script>
+        function generateInvisibleText() {
+            let text = document.getElementById("inputText").value;
+            if (text.trim() === "") {
+                alert("Enter some text first! ✍️");
+                return;
+            }
+            let invisibleText = text.split('').map(char => char + '\u200B').join('');
+            let outputDiv = document.getElementById("outputText");
+
+            outputDiv.innerText = invisibleText;
+            outputDiv.classList.add("hidden-text");
+            outputDiv.style.border = "2px solid #58a6ff";
+        }
+
+        function revealText() {
+            let outputDiv = document.getElementById("outputText");
+            outputDiv.classList.toggle("hidden-text");
+        }
+
+        function generateShareLink() {
+            let text = document.getElementById("inputText").value;
+            if (text.trim() === "") {
+                alert("Enter a secret message first! 😜");
+                return;
+            }
+            
+            let invisibleText = encodeURIComponent(text.split('').map(char => char + '\u200B').join(''));
+            let shareableLink = `${window.location.origin}${window.location.pathname}?msg=${invisibleText}`;
+
+            navigator.clipboard.writeText(shareableLink);
+            alert("Link copied! Send it to your friends & prank them! 😆");
+
+            document.getElementById("whatsappShare").style.display = "inline-block";
+            document.getElementById("telegramShare").style.display = "inline-block";
+            
+            document.getElementById("whatsappShare").onclick = function() {
+                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent("🔍 Check out this invisible message! " + shareableLink)}`, "_blank");
+            };
+            
+            document.getElementById("telegramShare").onclick = function() {
+                window.open(`https://t.me/share/url?url=${shareableLink}&text=${encodeURIComponent("🔍 Check out this invisible message!")}`, "_blank");
+            };
+        }
+
+        // Check if there's a message in the URL (for shared messages)
+        function checkForSharedMessage() {
+            let params = new URLSearchParams(window.location.search);
+            let hiddenMessage = params.get("msg");
+            if (hiddenMessage) {
+                document.getElementById("outputText").innerText = decodeURIComponent(hiddenMessage);
+                document.getElementById("outputText").classList.add("hidden-text");
+                alert("Someone pranked you! Click to reveal the secret message! 😆");
+            }
+        }
+
+        // Run on page load
+        checkForSharedMessage();
+    </script>
+
+</body>
+</html>
